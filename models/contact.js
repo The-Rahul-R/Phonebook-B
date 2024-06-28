@@ -1,8 +1,9 @@
+/* eslint-disable @stylistic/js/indent */
 const mongoose = require('mongoose')
 
 require('dotenv').config()
 
-const url = process.env.MONGODB_URL;
+const url = process.env.MONGODB_URL
 mongoose.set('strictQuery',false)
 mongoose.connect(url)
 const contactSchema = new mongoose.Schema({
@@ -15,11 +16,11 @@ const contactSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: function(v) {
-        const digitCount = v.replace(/[^0-9]/g, '').length; //to count digits by removing hyphen
-        const pattern = /^\d{2,3}-\d{5,}$/;
-        return digitCount >= 8 && pattern.test(v);
+        const digitCount = v.replace(/[^0-9]/g, '').length //to count digits by removing hyphen
+        const pattern = /^\d{2,3}-\d{5,}$/
+        return digitCount >= 8 && pattern.test(v)
       },
-    }, 
+    },
     required: true
   },
 })
@@ -27,9 +28,9 @@ const contactSchema = new mongoose.Schema({
 contactSchema.set('toJSON', {
     transform: (document, returnedObject) => {
       returnedObject.id = returnedObject._id.toString()
-      delete returnedObject._id
+    delete returnedObject._id
       delete returnedObject.__v
     }
   })
 
-module.exports = mongoose.model('Contact',contactSchema)  
+module.exports = mongoose.model('Contact',contactSchema)

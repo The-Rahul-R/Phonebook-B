@@ -1,7 +1,7 @@
+/* eslint-disable no-unused-vars */
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-const mongoose = require('mongoose')
 const app = express()
 app.use(cors())
 app.use(express.json())
@@ -11,48 +11,49 @@ morgan.token('post-data', function(req){ return req.method=== 'POST' ? JSON.stri
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
 
 let contacts = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
+  {
+    'id': 1,
+    'name': 'Arto Hellas',
+    'number': '040-123456'
+  },
+  {
+    'id': 2,
+    'name': 'Ada Lovelace',
+    'number': '39-44-5323523'
+  },
+  {
+    'id': 3,
+    'name': 'Dan Abramov',
+    'number': '12-43-234345'
+  },
+  {
+    'id': 4,
+    'name': 'Mary Poppendieck',
+    'number': '39-23-6423122'
+  }
 ]
 
 const Contact = require('./models/contact')
 
-//helper functions for exercises
-const getID =() =>{
+//helper functions for exercises. note: commented lines were part of previous exercise, so it is left as is
+
+const getID =() => {
   return Math.floor(Math.random()*100000)
 }
 
 function getCurrentDateTime() {
-  const now = new Date();
+  const now = new Date()
 
   // Get parts of the date
-  const dayName = now.toLocaleDateString('en-US', { weekday: 'short' });
-  const monthName = now.toLocaleDateString('en-US', { month: 'short' });
-  const day = now.getDate().toString().padStart(2, '0');
-  const year = now.getFullYear();
-  const time = now.toLocaleTimeString('en-US', { hour12: false });
-  const timeZone = now.toString().match(/\(([^)]+)\)$/)[1];
-  const offset = now.toString().match(/GMT([+-]\d{4})/)[1];
+  const dayName = now.toLocaleDateString('en-US', { weekday: 'short' })
+  const monthName = now.toLocaleDateString('en-US', { month: 'short' })
+  const day = now.getDate().toString().padStart(2, '0')
+  const year = now.getFullYear()
+  const time = now.toLocaleTimeString('en-US', { hour12: false })
+  const timeZone = now.toString().match(/\(([^)]+)\)$/)[1]
+  const offset = now.toString().match(/GMT([+-]\d{4})/)[1]
 
-  return `${dayName} ${monthName} ${day} ${year} ${time} GMT${offset} (${timeZone})`;
+  return `${dayName} ${monthName} ${day} ${year} ${time} GMT${offset} (${timeZone})`
 }
 
 const infoData = `<p>Phonebook has info for ${contacts.length} people</p>
@@ -65,84 +66,84 @@ app.get('/api/persons',(req,res,next) => {
   Contact.find({}).then(contact => {
     res.json(contact)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
-app.get('/info',(req,res,next)=> {
+app.get('/info',(req,res,next) => {
   Contact.countDocuments({})
-  .then(count => {
+    .then(count => {
       const infoData = `<p>Phonebook has info for ${count} people</p>
-      <p>${getCurrentDateTime()}</p>`;
-      res.send(infoData);
-  })
-  .catch(error => next(error))
+      <p>${getCurrentDateTime()}</p>`
+      res.send(infoData)
+    })
+    .catch(error => next(error))
 })
 
-app.get('/api/persons/:id', (req,res,next)=> {
-    // const id = Number(req.params.id)
-    // const contact = contacts.find(con => con.id === id)
-    // if(contact){
-    //     res.json(contact)
-    // }else{
-    //     res.status(400).send("Contact does not exist")
-    // } 
-    Contact.findById(req.params.id)
-      .then(contact => {
-        if(contact){
-          res.json(contact)
-        } else {
-          res.status(404).end()
-        }
-      })
-      .catch(error => next(error))
+app.get('/api/persons/:id', (req,res,next) => {
+  // const id = Number(req.params.id)
+  // const contact = contacts.find(con => con.id === id)
+  // if(contact){
+  //     res.json(contact)
+  // }else{
+  //     res.status(400).send("Contact does not exist")
+  // }
+  Contact.findById(req.params.id)
+    .then(contact => {
+      if(contact){
+        res.json(contact)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 
-app.delete('/api/persons/:id',(req,res,next)=>{
-    // const id = Number(req.params.id)
-    // contacts = contacts.filter(con => con.id !== id)
-    // res.status(204).end()
-    Contact.findByIdAndDelete(req.params.id)
-      .then(contact => {
-        if(contact){
-          res.status(200).send({ message: 'Deleted contact successfully', contact: contact });
-        } else {
-          res.status(404).send('contact not found')
-        }
-      })
-      .catch(error => next(error))
+app.delete('/api/persons/:id',(req,res,next) => {
+  // const id = Number(req.params.id)
+  // contacts = contacts.filter(con => con.id !== id)
+  // res.status(204).end()
+  Contact.findByIdAndDelete(req.params.id)
+    .then(contact => {
+      if(contact){
+        res.status(200).send({ message: 'Deleted contact successfully', contact: contact })
+      } else {
+        res.status(404).send('contact not found')
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons',(req,res,next) => {
- const id = getID()
- const contactBody = req.body
+  const id = getID()
+  const contactBody = req.body
 
-//  if (!contactBody.number) {
-//     return response.status(400).json({ 
-//       error: 'number missing' 
-//     })
-//   }
-//  if (!contactBody.name) {
-//   return response.status(400).json({ 
-//     error: 'name missing' 
-//   })
-//  } else {
-//   const exists = contacts.find(contact => contact.name === contactBody.name)
-//   if (exists)
-//     return response.status(400).json({ 
-//       error: 'name must be unique' 
-//     })
-//  }
+  //  if (!contactBody.number) {
+  //     return response.status(400).json({
+  //       error: 'number missing'
+  //     })
+  //   }
+  //  if (!contactBody.name) {
+  //   return response.status(400).json({
+  //     error: 'name missing'
+  //   })
+  //  } else {
+  //   const exists = contacts.find(contact => contact.name === contactBody.name)
+  //   if (exists)
+  //     return response.status(400).json({
+  //       error: 'name must be unique'
+  //     })
+  //  }
 
- const contact = new Contact({
-  name: contactBody.name,
-  number: contactBody.number
- })
- 
- contact.save().then(savedContact=> {
-  res.json(savedContact)
- })
- .catch(error => next(error))
+  const contact = new Contact({
+    name: contactBody.name,
+    number: contactBody.number
+  })
+
+  contact.save().then(savedContact => {
+    res.json(savedContact)
+  })
+    .catch(error => next(error))
 
 })
 
